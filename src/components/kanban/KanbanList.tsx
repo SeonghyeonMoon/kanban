@@ -1,25 +1,33 @@
 import { Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
-import { Todo } from '../../recoil/kanban';
+import { KanbanType } from '../../enums';
+import { Todo } from './Kanban';
 import KanbanItem from './KanbanItem';
 
 type Props = {
-	listId: string;
-	KanbanList: Todo[];
+	type: KanbanType;
+	kanbanList: Todo[];
+	handleIncreaseCount: (type: KanbanType, id: string) => void;
+	handleDecreaseCount: (type: KanbanType, id: string) => void;
+	handleDelete: (type: KanbanType, id: string) => void;
 };
 
-const KanbanList = ({ listId, KanbanList }: Props) => {
+const KanbanList = ({ type, kanbanList, handleIncreaseCount, handleDecreaseCount, handleDelete }: Props) => {
+	const handles = { handleIncreaseCount, handleDecreaseCount, handleDelete };
 	return (
-		<Droppable droppableId={listId}>
-			{(provided) => (
-				<Container ref={provided.innerRef} {...provided.droppableProps}>
-					{KanbanList.map(({ id, contents }, index) => (
-						<KanbanItem id={id} contents={contents} index={index} key={id} />
-					))}
-					{provided.placeholder}
-				</Container>
-			)}
-		</Droppable>
+		<Container>
+			<h1>{type}</h1>
+			<Droppable droppableId={type}>
+				{(provided) => (
+					<div ref={provided.innerRef} {...provided.droppableProps}>
+						{kanbanList.map((kanbanItem, index) => (
+							<KanbanItem {...kanbanItem} index={index} key={kanbanItem.id} type={type} {...handles} />
+						))}
+						{provided.placeholder}
+					</div>
+				)}
+			</Droppable>
+		</Container>
 	);
 };
 
@@ -28,6 +36,6 @@ export default KanbanList;
 const Container = styled.ul`
 	width: 300px;
 	height: 300px;
-	border: 1px solid black;
-	margin: 50px;
+	min-height: 900px;
+	margin: 0 20px;
 `;
