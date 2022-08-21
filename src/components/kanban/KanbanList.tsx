@@ -1,7 +1,6 @@
 import { Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
-import { KanbanType } from '../../enums';
-import { Todo } from './Kanban';
+import { KanbanType, Todo } from './Kanban';
 import KanbanItem from './KanbanItem';
 
 type Props = {
@@ -16,15 +15,15 @@ const KanbanList = ({ type, kanbanList, handleIncreaseCount, handleDecreaseCount
 	const handles = { handleIncreaseCount, handleDecreaseCount, handleDelete };
 	return (
 		<Container>
-			<h1>{type}</h1>
+			<ListTitle>{type}</ListTitle>
 			<Droppable droppableId={type}>
 				{(provided) => (
-					<div ref={provided.innerRef} {...provided.droppableProps}>
+					<List ref={provided.innerRef} {...provided.droppableProps}>
 						{kanbanList.map((kanbanItem, index) => (
 							<KanbanItem {...kanbanItem} index={index} key={kanbanItem.id} type={type} {...handles} />
 						))}
 						{provided.placeholder}
-					</div>
+					</List>
 				)}
 			</Droppable>
 		</Container>
@@ -33,9 +32,30 @@ const KanbanList = ({ type, kanbanList, handleIncreaseCount, handleDecreaseCount
 
 export default KanbanList;
 
-const Container = styled.ul`
-	width: 300px;
+const Container = styled.div`
+	width: 400px;
 	height: 300px;
-	min-height: 900px;
-	margin: 0 20px;
+	margin: 20px;
+`;
+
+const ListTitle = styled.h2`
+	font-size: 15px;
+`;
+
+const List = styled.ul`
+	list-style: none;
+	height: 300px;
+	padding-bottom: 10px;
+	overflow-y: scroll;
+	&::-webkit-scrollbar {
+		width: 5px;
+		transition: .2s;
+	}
+	&::-webkit-scrollbar-thumb {
+		border-radius: 10px;
+		background-color: #eee;
+	}
+	&::-webkit-scrollbar-thumb:hover {
+		background-color: #ddd;
+	}
 `;

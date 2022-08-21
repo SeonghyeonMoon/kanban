@@ -1,6 +1,6 @@
 import { Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
-import { KanbanType } from '../../enums';
+import { KanbanType } from './Kanban';
 
 type Props = {
 	id: string;
@@ -28,11 +28,11 @@ const KanbanItem = ({
 			{(provided) => (
 				<Container ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
 					<p>{contents}</p>
-					<p>
+					<Counter>
 						<CountButton onClick={() => handleDecreaseCount(type, id)}>-</CountButton>
 						{count}
 						<CountButton onClick={() => handleIncreaseCount(type, id)}>+</CountButton>
-					</p>
+					</Counter>
 					<DeleteButton onClick={() => handleDelete(type, id)}>X</DeleteButton>
 				</Container>
 			)}
@@ -43,23 +43,36 @@ const KanbanItem = ({
 export default KanbanItem;
 
 const Container = styled.li`
-	width: 300px;
-	background-color: #666;
-	color: #fff;
-	border-radius: 10px;
-	padding: 10px;
+	width: 95%;
+	height: 80px;
+	background-color: #fff;
+	border-radius: 5px;
+	padding: 5px 10px;
 	position: relative;
+	box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
 	& + & {
 		margin-top: 10px;
 	}
+	p {
+		width: 150px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+`;
+
+const Counter = styled.div`
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
 `;
 
 const CountButton = styled.button`
-	width: 15px;
-	height: 15px;
+	width: 20px;
+	height: 20px;
 	border-radius: 10px;
 	border: none;
-	background-color: #fff;
+	background: none;
+	color: #bbb;
 	margin: 0 10px;
 `;
 
@@ -67,4 +80,6 @@ const DeleteButton = styled.button`
 	position: absolute;
 	top: 10px;
 	right: 10px;
+	background: none;
+	border: none;
 `;

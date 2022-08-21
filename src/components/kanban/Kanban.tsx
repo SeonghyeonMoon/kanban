@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import { v4 } from 'uuid';
-import { KanbanType, KanbanTypes } from '../../enums';
 import KanbanAddForm from './KanbanAddForm';
 import KanbanList from './KanbanList';
 
@@ -11,6 +10,8 @@ export type Todo = {
 	contents: string;
 	count: number;
 };
+
+export type KanbanType = 'Todo' | 'Progress' | 'Complete';
 
 const Kanban = () => {
 	const [todoList, setTodoList] = useState<Todo[]>([]);
@@ -23,6 +24,8 @@ const Kanban = () => {
 	};
 
 	const handleDragEnd = (result: DropResult) => {
+		console.log(result);
+
 		const { source, destination } = result;
 		if (!destination) return;
 
@@ -31,20 +34,20 @@ const Kanban = () => {
 		const newProgressList = [...progressList];
 		const newCompleteList = [...completeList];
 
-		if (source.droppableId === KanbanTypes.Todo) {
+		if (source.droppableId === 'Todo') {
 			[sourceItem] = newTodoList.splice(source.index, 1);
-		} else if (source.droppableId === KanbanTypes.Progress) {
+		} else if (source.droppableId === 'Progress') {
 			[sourceItem] = newProgressList.splice(source.index, 1);
-		} else if (source.droppableId === KanbanTypes.Complete) {
+		} else if (source.droppableId === 'Complete') {
 			[sourceItem] = newCompleteList.splice(source.index, 1);
 		}
 
 		if (!sourceItem) return;
-		if (destination.droppableId === KanbanTypes.Todo) {
+		if (destination.droppableId === 'Todo') {
 			newTodoList.splice(destination.index, 0, sourceItem);
-		} else if (destination.droppableId === KanbanTypes.Progress) {
+		} else if (destination.droppableId === 'Progress') {
 			newProgressList.splice(destination.index, 0, sourceItem);
-		} else if (destination.droppableId === KanbanTypes.Complete) {
+		} else if (destination.droppableId === 'Complete') {
 			newCompleteList.splice(destination.index, 0, sourceItem);
 		}
 
@@ -55,19 +58,19 @@ const Kanban = () => {
 
 	const handleIncreaseCount = (type: KanbanType, id: string) => {
 		switch (type) {
-			case KanbanTypes.Todo:
+			case 'Todo':
 				setTodoList(
 					todoList.map((todoItem) => (todoItem.id === id ? { ...todoItem, count: todoItem.count + 1 } : todoItem)),
 				);
 				break;
-			case KanbanTypes.Progress:
+			case 'Progress':
 				setProgressList(
 					progressList.map((progressItem) =>
 						progressItem.id === id ? { ...progressItem, count: progressItem.count + 1 } : progressItem,
 					),
 				);
 				break;
-			case KanbanTypes.Complete:
+			case 'Complete':
 				setCompleteList(
 					completeList.map((completeItem) =>
 						completeItem.id === id ? { ...completeItem, count: completeItem.count + 1 } : completeItem,
@@ -81,14 +84,14 @@ const Kanban = () => {
 
 	const handleDecreaseCount = (type: KanbanType, id: string) => {
 		switch (type) {
-			case KanbanTypes.Todo:
+			case 'Todo':
 				setTodoList(
 					todoList.map((todoItem) =>
 						todoItem.id === id ? { ...todoItem, count: todoItem.count === 0 ? 0 : todoItem.count - 1 } : todoItem,
 					),
 				);
 				break;
-			case KanbanTypes.Progress:
+			case 'Progress':
 				setProgressList(
 					progressList.map((progressItem) =>
 						progressItem.id === id
@@ -97,7 +100,7 @@ const Kanban = () => {
 					),
 				);
 				break;
-			case KanbanTypes.Complete:
+			case 'Complete':
 				setCompleteList(
 					completeList.map((completeItem) =>
 						completeItem.id === id
@@ -113,13 +116,13 @@ const Kanban = () => {
 
 	const handleDelete = (type: KanbanType, id: string) => {
 		switch (type) {
-			case KanbanTypes.Todo:
+			case 'Todo':
 				setTodoList(todoList.filter((todoItem) => todoItem.id !== id));
 				break;
-			case KanbanTypes.Progress:
+			case 'Progress':
 				setProgressList(progressList.filter((progressItem) => progressItem.id !== id));
 				break;
-			case KanbanTypes.Complete:
+			case 'Complete':
 				setCompleteList(completeList.filter((completeItem) => completeItem.id !== id));
 				break;
 			default:
@@ -129,21 +132,40 @@ const Kanban = () => {
 
 	const handles = { handleIncreaseCount, handleDecreaseCount, handleDelete };
 	return (
-		<>
+		<Container>
 			<KanbanAddForm handleAdd={handleAdd} />
 			<DragDropContext onDragEnd={handleDragEnd}>
-				<Container>
-					<KanbanList type={KanbanTypes.Todo} kanbanList={todoList} {...handles} />
-					<KanbanList type={KanbanTypes.Progress} kanbanList={progressList} {...handles} />
-					<KanbanList type={KanbanTypes.Complete} kanbanList={completeList} {...handles} />
-				</Container>
+				<FlexContainer>
+					<KanbanList type={'Todo'} kanbanList={todoList} {...handles} />
+					<KanbanList type={'Progress'} kanbanList={progressList} {...handles} />
+					<KanbanList type={'Complete'} kanbanList={completeList} {...handles} />
+				</FlexContainer>
 			</DragDropContext>
-		</>
+		</Container>
 	);
 };
 
 export default Kanban;
 
 const Container = styled.div`
+	width: 1000px;
+	color: #bbb;
+	* {
+		box-sizing: border-box;
+	}
+	ul {
+		padding: 0;
+	}
+	button {
+		color: #bbb;
+		cursor: pointer;
+	}
+	input {
+		color: #bbb;
+	}
+`;
+
+const FlexContainer = styled.div`
 	display: flex;
+	justify-content: space-between;
 `;
